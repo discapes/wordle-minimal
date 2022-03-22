@@ -8,7 +8,7 @@
 			.map((_, n) => Object.assign(func(), { n: n }));
 	let Letter = () => ({ val: "", input: null, bg: "#121213" });
 	let Row = () => indexedArray(5, Letter);
-	
+
 	let wotd, currentRow, board;
 	function init() {
 		wotd = getWord();
@@ -27,7 +27,7 @@
 			init();
 		}, 2000);
 	}
-	
+
 	function gameLoss() {
 		setTimeout(() => {
 			alert("Correct word was " + wotd);
@@ -62,7 +62,7 @@
 	}
 </script>
 
-<div class="content">
+<div>
 	<h1>Hello worldle!</h1>
 
 	{#each board as row}
@@ -70,6 +70,7 @@
 			<input
 				class="slot"
 				type="text"
+				max-length="1"
 				disabled={row.n != currentRow}
 				bind:value={letter.val}
 				bind:this={letter.input}
@@ -85,9 +86,12 @@
 	:global(body) {
 		background: #121213;
 		color: white;
-		padding: 100px;
 		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
+
 	.slot {
 		width: 40px;
 		height: 40px;

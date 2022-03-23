@@ -9,7 +9,7 @@ export function validWord(word) {
 }
 
 export function isLetter(str) {
- 	return str.length === 1 && str.match(/[a-z]/i);
+ 	return str && str.length === 1 && str.match(/[a-z]/i);
 }
 
 export function getColors(guess, targetWord) {

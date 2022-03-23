@@ -23,20 +23,32 @@
 		currentRow = -1;
 		document.activeElement.blur();
 		setTimeout(() => {
-			alert("Correct! " + tries + " tries");
+			console.log("Correct! " + tries + " tries");
 			init();
 		}, 2000);
 	}
 
 	function gameLoss() {
 		setTimeout(() => {
-			alert("Correct word was " + wotd);
+			console.log("Correct word was " + wotd);
 			init();
 		}, 2000);
 	}
 
-	function keydown(row, letter, e) {
-		let guess = row.map((letter) => letter.val.toLowerCase()).join("");
+	// need to have these separate because android doesnt support keydown except for enter and backspace on empty input
+	function oninput(row, letter, e) {
+		if (isLetter(e.data?.slice(-1)) && (!letter.val || letter.n < 5 - 1)) {
+			letter.val = e.data.slice(-1);
+			if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
+		} else {
+			letter.val = letter.val[0];
+		}
+		board[row.n][letter.n] = board[row.n][letter.n];
+	}
+	function onkeydown(row, letter, e) {
+		let guess = row
+			.map((letter) => (letter.val ? letter.val.toLowerCase() : ""))
+			.join("");
 		if (e.key === "Enter") {
 			if (validWord(guess)) {
 				letter.input.blur();
@@ -49,14 +61,22 @@
 				);
 				currentRow++;
 			} else {
-				alert("Invalid word!");
+				console.log("Invalid word!");
 			}
 		} else if (isLetter(e.key)) {
 			if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
 			if (!letter.val || letter.n < 5 - 1) letter.val = e.key;
+			e.preventDefault();
+		} else if (e.key == "Tab") {
+			e.preventDefault();
+			p;
 		} else if (e.key == "Backspace") {
-			letter.val = "";
-			if (letter.n > 0) row[letter.n - 1].input.focus();
+			if (letter.val) letter.val = "";
+			else if (letter.n > 0) {
+				row[letter.n - 1].input.focus();
+				row[letter.n - 1].val = "";
+			}
+			e.preventDefault();
 		}
 		board[row.n] = board[row.n];
 	}
@@ -70,11 +90,11 @@
 			<input
 				class="slot"
 				type="text"
-				max-length="1"
 				disabled={row.n != currentRow}
 				bind:value={letter.val}
 				bind:this={letter.input}
-				on:keydown|preventDefault={(e) => keydown(row, letter, e)}
+				on:input|preventDefault={(e) => oninput(row, letter, e)}
+				on:keydown={(e) => onkeydown(row, letter, e)}
 				style="background:{letter.bg}"
 			/>
 		{/each}

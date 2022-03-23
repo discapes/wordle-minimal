@@ -1,5 +1,5 @@
----
-https://discapes.github.io/wordle-minimal/
+# wordle-minimal
+Demo: https://discapes.github.io/wordle-minimal/
 
 ## Get started
 

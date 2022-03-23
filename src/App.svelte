@@ -6,7 +6,12 @@
 		Array(l)
 			.fill(0)
 			.map((_, n) => Object.assign(func(), { n: n }));
-	let Letter = () => ({ val: "", input: null, bg: "#121213" });
+	let Letter = () => ({
+		val: "",
+		input: null,
+		bg: "#121213",
+		noReplace: false,
+	});
 	let Row = () => indexedArray(5, Letter);
 
 	let wotd, currentRow, board;
@@ -20,7 +25,7 @@
 
 	function gameWin() {
 		let tries = currentRow;
-		currentRow = -1;
+		currentRow = -999;
 		document.activeElement.blur();
 		setTimeout(() => {
 			console.log("Correct! " + tries + " tries");
@@ -35,50 +40,42 @@
 		}, 2000);
 	}
 
-	// need to have these separate because android doesnt support keydown except for enter and backspace on empty input
 	function oninput(row, letter, e) {
-		if (isLetter(e.data?.slice(-1)) && (!letter.val || letter.n < 5 - 1)) {
+		if (isLetter(e.data?.slice(-1)) && !letter.noReplace) {
 			letter.val = e.data.slice(-1);
+			row[5 - 1].noReplace = letter.n == 5 - 1;
 			if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
 		} else {
-			letter.val = letter.val[0];
+			letter.val = isLetter(letter.val[0]) ? letter.val[0] : "";
 		}
 		board[row.n][letter.n] = board[row.n][letter.n];
 	}
+
 	function onkeydown(row, letter, e) {
-		let guess = row
+		if (e.key === "Enter") {
+			let guess = row
 			.map((letter) => (letter.val ? letter.val.toLowerCase() : ""))
 			.join("");
-		if (e.key === "Enter") {
 			if (validWord(guess)) {
 				letter.input.blur();
-				if (row.n < 6 - 1)
+
+				if (guess == wotd) gameWin();
+				else if (row.n < 6 - 1)
 					tick().then(() => board[row.n + 1][0].input.focus());
 				else gameLoss();
-				if (guess == wotd) gameWin();
+
 				getColors(guess, wotd).forEach(
 					(color, i) => (row[i].bg = color)
 				);
 				currentRow++;
+				board[row.n] = board[row.n];
 			} else {
 				console.log("Invalid word!");
 			}
-		} else if (isLetter(e.key)) {
-			if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
-			if (!letter.val || letter.n < 5 - 1) letter.val = e.key;
-			e.preventDefault();
-		} else if (e.key == "Tab") {
-			e.preventDefault();
-			p;
-		} else if (e.key == "Backspace") {
-			if (letter.val) letter.val = "";
-			else if (letter.n > 0) {
-				row[letter.n - 1].input.focus();
-				row[letter.n - 1].val = "";
-			}
-			e.preventDefault();
+		} else if (e.key == "Backspace" && !letter.val && letter.n > 0) {
+			row[letter.n - 1].input.focus();
+			row[letter.n - 1].val = "";
 		}
-		board[row.n] = board[row.n];
 	}
 </script>
 

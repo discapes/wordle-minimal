@@ -2,6 +2,7 @@ import { VALIDGUESSES } from './ValidWords.js';
 import { WORDLIST } from './WordList.js';
 export const WORD_LEN = 5;
 export const N_TRIES = 6;
+export const FIREFOX_ANDROID = navigator.userAgent.toLowerCase().includes("firefox") && navigator.userAgent.toLowerCase().includes("android");
 export const getWord = () => WORDLIST[Math.floor(Math.random() * WORDLIST.length)];
 
 export function validWord(word) {

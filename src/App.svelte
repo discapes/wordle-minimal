@@ -1,6 +1,6 @@
 <script>
 	import { tick } from "svelte";
-	import { getColors, validWord, isLetter, getWord } from "./functions.js";
+	import { getColors, validWord, isLetter, getWord, FIREFOX_ANDROID } from "./functions.js";
 
 	let indexedArray = (l, func) =>
 		Array(l)
@@ -28,32 +28,20 @@
 		currentRow = -999;
 		document.activeElement.blur();
 		setTimeout(() => {
-			console.log("Correct! " + tries + " tries");
+			alert("Correct! " + tries + " tries");
 			init();
 		}, 2000);
 	}
 
 	function gameLoss() {
 		setTimeout(() => {
-			console.log("Correct word was " + wotd);
+			alert("Correct word was " + wotd);
 			init();
 		}, 2000);
 	}
 
-	function oninput(row, letter, e) {
-		if (isLetter(e.data?.slice(-1)) && !letter.noReplace) {
-			letter.val = e.data.slice(-1);
-			row[5 - 1].noReplace = letter.n == 5 - 1;
-			if (letter.n < 5 - 1) tick().then(() => row[letter.n + 1].input.focus()); // tick().then() needed for firefox android
-		} else {
-			letter.val = isLetter(letter.val[0]) ? letter.val[0] : "";
-		}
-		board[row.n][letter.n] = board[row.n][letter.n];
-	}
-
-	function onkeydown(row, letter, e) {
-		if (e.key === "Enter") {
-			let guess = row
+	function submit(row, letter) {
+		let guess = row
 			.map((letter) => (letter.val ? letter.val.toLowerCase() : ""))
 			.join("");
 			if (validWord(guess)) {
@@ -70,8 +58,26 @@
 				currentRow++;
 				board[row.n] = board[row.n];
 			} else {
-				console.log("Invalid word!");
+				alert("Invalid word!");
 			}
+	}
+
+	function oninput(row, letter, e) {
+		if (e.data.includes('\n')) submit(row, letter); // some browsers send \n instead of keydown enter
+		else if (isLetter(e.data?.slice(-1)) && !letter.noReplace) {
+			letter.val = e.data.slice(-1);
+			row[5 - 1].noReplace = letter.n == 5 - 1;
+			if (FIREFOX_ANDROID && letter.n < 5 - 1) tick().then(() => row[letter.n + 1].input.focus()); // needed for firefox android, but typing fast wont work
+			else if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
+		} else {
+			letter.val = isLetter(letter.val[0]) ? letter.val[0] : "";
+		}
+		board[row.n][letter.n] = board[row.n][letter.n];
+	}
+
+	function onkeydown(row, letter, e) {
+		if (e.key === "Enter") {
+			submit(row, letter);
 		} else if (e.key == "Backspace" && !letter.val && letter.n > 0) {
 			row[letter.n - 1].input.focus();
 			row[letter.n - 1].val = "";

@@ -44,7 +44,7 @@
 		if (isLetter(e.data?.slice(-1)) && !letter.noReplace) {
 			letter.val = e.data.slice(-1);
 			row[5 - 1].noReplace = letter.n == 5 - 1;
-			if (letter.n < 5 - 1) row[letter.n + 1].input.focus();
+			if (letter.n < 5 - 1) tick().then(() => row[letter.n + 1].input.focus()); // tick().then() needed for firefox android
 		} else {
 			letter.val = isLetter(letter.val[0]) ? letter.val[0] : "";
 		}

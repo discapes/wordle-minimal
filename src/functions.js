@@ -6,7 +6,7 @@ export const FIREFOX_ANDROID = navigator.userAgent.toLowerCase().includes("firef
 export const getWord = () => WORDLIST[Math.floor(Math.random() * WORDLIST.length)];
 
 export function validWord(word) {
-	return VALIDGUESSES.includes(word);							 
+	return VALIDGUESSES.includes(word) || WORDLIST.includes(word);							 
 }
 
 export function isLetter(str) {

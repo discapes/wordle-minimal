@@ -23,8 +23,7 @@
 	}
 	init();
 
-	function gameWin() {
-		let tries = currentRow;
+	function gameWin(tries) {
 		currentRow = -999;
 		document.activeElement.blur();
 		setTimeout(() => {
@@ -47,7 +46,7 @@
 			if (validWord(guess)) {
 				letter.input.blur();
 
-				if (guess == wotd) gameWin();
+				if (guess == wotd) gameWin(row.n + 1);
 				else if (row.n < 6 - 1)
 					tick().then(() => board[row.n + 1][0].input.focus());
 				else gameLoss();
@@ -86,7 +85,7 @@
 </script>
 
 <div>
-	<h1>Hello worldle!</h1>
+	<h1>📕 🅼🅴🅼🅾🆁🅳🅻🅴 📕</h1>
 
 	{#each board as row}
 		{#each row as letter}

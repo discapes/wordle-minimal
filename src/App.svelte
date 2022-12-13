@@ -85,7 +85,7 @@
 </script>
 
 <div>
-	<h1>📕 🅼🅴🅼🅾🆁🅳🅻🅴 📕</h1>
+	<h1>📕 memordle 📕</h1>
 
 	{#each board as row}
 		{#each row as letter}
